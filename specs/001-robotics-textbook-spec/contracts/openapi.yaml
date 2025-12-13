@@ -1,0 +1,53 @@
+openapi: 3.0.0
+info:
+  title: AI-Native Textbook RAG API
+  version: 1.0.0
+  description: A simple API to interact with the RAG chatbot.
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /ask:
+    post:
+      summary: Ask a question to the chatbot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  example: "What is a perception-action loop?"
+      responses:
+        '200':
+          description: A successful response from the chatbot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: "A perception-action loop is a fundamental concept in robotics..."
+                  source_chapter:
+                    type: string
+                    example: "Chapter 1 — Foundations of Physical AI & Embodied Intelligence"
+                  source_section:
+                    type: string
+                    example: "Perception–action loops"
+                  confidence:
+                    type: number
+                    format: float
+                    example: 0.95
+        '404':
+          description: The chatbot could not find a relevant answer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "I could not find an answer to that question in the textbook."
