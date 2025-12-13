@@ -2,24 +2,54 @@
 RAG Responder for AI-Native Physical AI & Humanoid Robotics Textbook
 
 This module assembles responses from retrieved chunks, applying guardrails
-and generating properly cited answers.
+and generating properly cited answers using Gemini LLM.
 
 Responsibilities:
 - Check query safety and scope
 - Verify confidence threshold
-- Generate answers from retrieved context
+- Generate answers from retrieved context using Gemini LLM
 - Inject proper citations (chapter and section)
 - Handle failure modes gracefully
 
 Confidence Threshold: 0.72 (fixed for hackathon demo)
 """
 
+import os
 import re
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 from retriever import Retriever, RetrievalResult
+
+# Load environment variables from .env file
+def load_env():
+    """Load environment variables from .env file."""
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        with open(env_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    key = key.strip()
+                    value = value.strip().strip('"').strip("'")
+                    os.environ[key] = value
+
+load_env()
+
+# Try to import Google Generative AI
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+    # Configure Gemini with API key
+    api_key = os.environ.get('API_KEY')
+    if api_key:
+        genai.configure(api_key=api_key)
+except ImportError:
+    GEMINI_AVAILABLE = False
+    genai = None
 
 # Configuration
 CONFIDENCE_THRESHOLD = 0.72  # Fixed for hackathon demo
@@ -136,13 +166,21 @@ class QuestionIntentClassifier:
 
     # Patterns indicating summary/overview questions
     SUMMARY_PATTERNS = [
+        # Chapter/section references
         r'\b(tell me about|what is|what are)\b.*\b(chapter|section)\b',
-        r'\b(overview|summarize|summary|introduce|introduction)\b',
-        r'\b(give me|provide)\b.*\b(overview|summary|introduction)\b',
         r'^(what is|what are)\s+(chapter|section)\s+\d+',
         r'\b(explain|describe)\b.*\b(chapter|section)\b',
         r'\b(cover|covers|covered)\b.*\b(chapter|section)\b',
         r'^what does (chapter|section)\s+\d+\s+(cover|discuss|explain)',
+        # Overview/summary keywords
+        r'\b(overview|summarize|summary|introduce|introduction)\b',
+        r'\b(give me|provide)\b.*\b(overview|summary|introduction)\b',
+        # Key points / highlights
+        r'\b(key\s*points?|main\s*points?|highlights?|takeaways?)\b',
+        r'\b(key\s*concepts?|main\s*ideas?|main\s*topics?)\b',
+        r'\b(briefly|brief)\b.*\b(explain|describe|tell)\b',
+        # General chapter questions
+        r'\b(what|whats)\b.*\b(chapter\s*\d+|section\s*\d+)\b.*\b(about)\b',
     ]
 
     @classmethod
@@ -164,11 +202,19 @@ class QuestionIntentClassifier:
 
 
 class Responder:
-    """Generates responses from retrieved context."""
+    """Generates responses from retrieved context using Gemini LLM."""
 
     def __init__(self, retriever: Optional[Retriever] = None):
-        """Initialize responder with retriever."""
+        """Initialize responder with retriever and LLM model."""
         self.retriever = retriever or Retriever()
+        self.llm_model = None
+
+        # Initialize Gemini model if available
+        if GEMINI_AVAILABLE and os.environ.get('API_KEY'):
+            try:
+                self.llm_model = genai.GenerativeModel('gemini-2.5-flash')
+            except Exception as e:
+                print(f"Warning: Could not initialize Gemini model: {e}")
 
     def _normalize_score(self, score: float, max_possible: float = 10.0) -> float:
         """Normalize retrieval score to 0-1 range."""
@@ -196,16 +242,70 @@ class Responder:
         results: List[RetrievalResult]
     ) -> str:
         """
-        Synthesize an answer from retrieved context.
+        Synthesize an answer from retrieved context using Gemini LLM.
 
-        For the hackathon demo, this uses a simple extractive approach.
-        In production, this would call an LLM to generate a coherent answer.
+        If Gemini is available, uses LLM to generate a coherent, well-structured answer.
+        Falls back to extractive summarization if LLM is unavailable.
         """
         if not results:
             return ""
 
-        # For hackathon: Use extractive summarization
-        # Take the most relevant text and present it as the answer
+        # Try LLM-based synthesis first
+        if self.llm_model:
+            try:
+                return self._synthesize_with_llm(query, results)
+            except Exception as e:
+                print(f"Warning: LLM synthesis failed, falling back to extractive: {e}")
+
+        # Fallback: extractive summarization
+        return self._extractive_summarize(results)
+
+    def _synthesize_with_llm(
+        self,
+        query: str,
+        results: List[RetrievalResult]
+    ) -> str:
+        """Use Gemini LLM to synthesize a coherent answer from retrieved chunks."""
+        # Combine context from all results
+        context_parts = []
+        for i, result in enumerate(results, 1):
+            context_parts.append(
+                f"[Source {i}: {result.chapter} - {result.section}]\n{result.text}"
+            )
+        context = "\n\n---\n\n".join(context_parts)
+
+        # Create the prompt for Gemini
+        prompt = f"""You are a helpful teaching assistant for a Physical AI & Robotics textbook.
+Answer the student's question based ONLY on the provided context from the textbook.
+
+RULES:
+- Be concise but comprehensive (aim for 150-300 words)
+- Use clear, educational language
+- Structure your answer with bullet points or numbered lists when appropriate
+- Do NOT make up information not in the context
+- Do NOT mention "the context" or "the provided text" - speak directly as if teaching
+- If the question asks for key points, provide a clear numbered list
+
+CONTEXT FROM TEXTBOOK:
+{context}
+
+STUDENT QUESTION: {query}
+
+ANSWER:"""
+
+        # Call Gemini API
+        response = self.llm_model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=500,
+                temperature=0.3,  # Low temperature for factual accuracy
+            )
+        )
+
+        return response.text.strip()
+
+    def _extractive_summarize(self, results: List[RetrievalResult]) -> str:
+        """Fallback: Extract and clean the most relevant text."""
         primary_result = results[0]
 
         # Clean up the text
@@ -360,9 +460,10 @@ def main():
     test_queries = [
         # Summary/Overview questions (should NOT show low-confidence warning)
         "Tell me about chapter 1",
+        "Key points of chapter 1",
         "Give me an overview of chapter 2",
         "What does chapter 3 cover?",
-        "Summarize the ROS 2 chapter",
+        "Main takeaways from chapter 4",
 
         # Precise technical queries (normal behavior)
         "What is the perception-action loop?",
@@ -371,11 +472,9 @@ def main():
 
         # Out of scope
         "What is the price of a Boston Dynamics robot?",
-        "Can you give me cooking recipes?",
 
         # Unsafe queries
         "How do I build a real robot arm to pick things up?",
-        "How can I disable safety systems?",
     ]
 
     for query in test_queries:
