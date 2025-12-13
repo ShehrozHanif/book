@@ -1,3 +1,4 @@
+```yaml
 # render.yaml
 # This file configures the deployment of the FastAPI RAG API to Render.com.
 
@@ -16,3 +17,4 @@ services:
       #   value: "https://yourfrontenddomain.com,https://anotherdomain.com"
       # Make sure your RAG index (index.json) is committed to your repository
       # and is present in the 'rag' directory for the API to function correctly.
+```
