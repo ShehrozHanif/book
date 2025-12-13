@@ -1,0 +1,18 @@
+# render.yaml
+# This file configures the deployment of the FastAPI RAG API to Render.com.
+
+services:
+  - type: web
+    name: physical-ai-textbook-rag-api
+    region: oregon # You can change this to your preferred region, e.g., "singapore", "frankfurt"
+    rootDir: rag # The root directory for the service is the 'rag' folder
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18 # Specify a Python version compatible with your requirements
+      # If you need to restrict CORS origins in production, uncomment and set the following:
+      # - key: CORS_ORIGINS
+      #   value: "https://yourfrontenddomain.com,https://anotherdomain.com"
+      # Make sure your RAG index (index.json) is committed to your repository
+      # and is present in the 'rag' directory for the API to function correctly.
