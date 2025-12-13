@@ -6,13 +6,13 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "1. Introduction to Physical AI",
       "tags": [
-        "physical-ai",
-        "simulation",
         "sensor",
+        "simulation",
         "action",
+        "perception",
         "foundations",
-        "foundation-model",
-        "perception"
+        "physical-ai",
+        "foundation-model"
       ],
       "token_count": 333,
       "source_file": "chapter-1-foundations.md"
@@ -26,8 +26,8 @@
         "sensor",
         "embodiment",
         "action",
-        "foundations",
-        "perception"
+        "perception",
+        "foundations"
       ],
       "token_count": 414,
       "source_file": "chapter-1-foundations.md"
@@ -38,13 +38,13 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "3. The Perception-Action Loop",
       "tags": [
-        "physical-ai",
         "sensor",
-        "planning",
         "action",
+        "perception",
         "foundations",
-        "navigation",
-        "perception"
+        "planning",
+        "physical-ai",
+        "navigation"
       ],
       "token_count": 447,
       "source_file": "chapter-1-foundations.md"
@@ -55,12 +55,12 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "4. Key Components of Physical AI Systems",
       "tags": [
-        "control",
-        "physical-ai",
         "sensor",
-        "planning",
+        "control",
+        "perception",
         "foundations",
-        "perception"
+        "planning",
+        "physical-ai"
       ],
       "token_count": 506,
       "source_file": "chapter-1-foundations.md"
@@ -71,12 +71,12 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "5. Challenges in Physical AI",
       "tags": [
-        "control",
-        "physical-ai",
         "sensor",
+        "control",
         "simulation",
+        "foundations",
         "robot-learning",
-        "foundations"
+        "physical-ai"
       ],
       "token_count": 424,
       "source_file": "chapter-1-foundations.md"
@@ -87,9 +87,9 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "6. The Role of Simulation",
       "tags": [
+        "foundations",
         "physical-ai",
-        "simulation",
-        "foundations"
+        "simulation"
       ],
       "token_count": 200,
       "source_file": "chapter-1-foundations.md"
@@ -102,9 +102,9 @@
       "tags": [
         "sensor",
         "llm",
+        "foundations",
         "robot-learning",
         "planning",
-        "foundations",
         "foundation-model"
       ],
       "token_count": 272,
@@ -116,17 +116,17 @@
       "chapter": "Chapter 1: Foundations of Physical AI & Embodied Intelligence",
       "section": "8. Summary and Key Takeaways",
       "tags": [
-        "physical-ai",
         "vla",
-        "simulation",
         "sensor",
         "control",
-        "embodiment",
         "ros2",
+        "embodiment",
+        "simulation",
         "action",
-        "planning",
+        "perception",
         "foundations",
-        "perception"
+        "planning",
+        "physical-ai"
       ],
       "token_count": 261,
       "source_file": "chapter-1-foundations.md"
@@ -137,10 +137,10 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "1. Introduction to ROS 2",
       "tags": [
-        "ros2-architecture",
+        "sensor",
         "ros2",
         "action",
-        "sensor"
+        "ros2-architecture"
       ],
       "token_count": 286,
       "source_file": "chapter-2-ros2.md"
@@ -151,8 +151,8 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "2. The Evolution from ROS 1 to ROS 2",
       "tags": [
-        "ros2-architecture",
         "ros2",
+        "ros2-architecture",
         "robot-learning"
       ],
       "token_count": 360,
@@ -165,11 +165,11 @@
       "section": "3. Core Concepts: Nodes, Topics, and Messages",
       "tags": [
         "sensor",
-        "ros2-architecture",
+        "ros2",
         "perception",
+        "ros2-architecture",
         "planning",
-        "navigation",
-        "ros2"
+        "navigation"
       ],
       "token_count": 456,
       "source_file": "chapter-2-ros2.md"
@@ -180,8 +180,8 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "4. Services and Actions",
       "tags": [
-        "ros2-architecture",
-        "ros2"
+        "ros2",
+        "ros2-architecture"
       ],
       "token_count": 311,
       "source_file": "chapter-2-ros2.md"
@@ -192,10 +192,10 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "5. Quality of Service (QoS)",
       "tags": [
-        "ros2-architecture",
-        "ros2",
+        "sensor",
         "control",
-        "sensor"
+        "ros2",
+        "ros2-architecture"
       ],
       "token_count": 234,
       "source_file": "chapter-2-ros2.md"
@@ -206,14 +206,14 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "6. Common ROS 2 Packages and Tools",
       "tags": [
-        "control",
-        "physical-ai",
         "sensor",
-        "ros2-architecture",
+        "control",
+        "ros2",
         "perception",
+        "ros2-architecture",
         "planning",
-        "navigation",
-        "ros2"
+        "physical-ai",
+        "navigation"
       ],
       "token_count": 447,
       "source_file": "chapter-2-ros2.md"
@@ -224,10 +224,10 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "7. Building a ROS 2 System",
       "tags": [
-        "ros2-architecture",
+        "perception",
         "ros2",
         "navigation",
-        "perception"
+        "ros2-architecture"
       ],
       "token_count": 291,
       "source_file": "chapter-2-ros2.md"
@@ -238,11 +238,11 @@
       "chapter": "Chapter 2: ROS 2 & Robotics System Architecture",
       "section": "9. Summary and Key Takeaways",
       "tags": [
-        "physical-ai",
-        "ros2-architecture",
+        "ros2",
         "perception",
-        "navigation",
-        "ros2"
+        "ros2-architecture",
+        "physical-ai",
+        "navigation"
       ],
       "token_count": 223,
       "source_file": "chapter-2-ros2.md"
@@ -253,10 +253,10 @@
       "chapter": "Chapter 3: Simulation, Digital Twins & NVIDIA Isaac",
       "section": "1. The Role of Simulation in Robotics",
       "tags": [
-        "simulation-twins",
-        "physical-ai",
         "digital-twin",
-        "simulation"
+        "physical-ai",
+        "simulation",
+        "simulation-twins"
       ],
       "token_count": 377,
       "source_file": "chapter-3-simulation.md"
@@ -269,9 +269,9 @@
       "tags": [
         "control",
         "simulation",
-        "nvidia-isaac",
+        "simulation-twins",
         "robot-learning",
-        "simulation-twins"
+        "nvidia-isaac"
       ],
       "token_count": 361,
       "source_file": "chapter-3-simulation.md"
@@ -283,9 +283,9 @@
       "section": "3. Digital Twins",
       "tags": [
         "sensor",
-        "simulation-twins",
         "digital-twin",
-        "simulation"
+        "simulation",
+        "simulation-twins"
       ],
       "token_count": 429,
       "source_file": "chapter-3-simulation.md"
@@ -296,12 +296,12 @@
       "chapter": "Chapter 3: Simulation, Digital Twins & NVIDIA Isaac",
       "section": "4. NVIDIA Isaac Platform",
       "tags": [
+        "ros2",
         "simulation",
-        "nvidia-isaac",
         "simulation-twins",
         "perception",
         "navigation",
-        "ros2"
+        "nvidia-isaac"
       ],
       "token_count": 474,
       "source_file": "chapter-3-simulation.md"
@@ -325,8 +325,8 @@
       "chapter": "Chapter 3: Simulation, Digital Twins & NVIDIA Isaac",
       "section": "6. Synthetic Data Generation",
       "tags": [
-        "simulation-twins",
         "perception",
+        "simulation-twins",
         "simulation"
       ],
       "token_count": 281,
@@ -338,8 +338,8 @@
       "chapter": "Chapter 3: Simulation, Digital Twins & NVIDIA Isaac",
       "section": "7. Building a Simulation Workflow",
       "tags": [
-        "simulation-twins",
         "control",
+        "simulation-twins",
         "simulation"
       ],
       "token_count": 214,
@@ -351,12 +351,12 @@
       "chapter": "Chapter 3: Simulation, Digital Twins & NVIDIA Isaac",
       "section": "9. Summary and Key Takeaways",
       "tags": [
-        "physical-ai",
         "simulation",
-        "nvidia-isaac",
-        "digital-twin",
         "simulation-twins",
-        "perception"
+        "perception",
+        "digital-twin",
+        "physical-ai",
+        "nvidia-isaac"
       ],
       "token_count": 236,
       "source_file": "chapter-3-simulation.md"
@@ -370,11 +370,11 @@
         "vla",
         "control",
         "simulation",
+        "action",
         "llm",
         "robot-learning",
-        "action",
-        "foundation-model",
-        "vla-systems"
+        "vla-systems",
+        "foundation-model"
       ],
       "token_count": 397,
       "source_file": "chapter-4-vla.md"
@@ -385,9 +385,9 @@
       "chapter": "Chapter 4: Vision–Language–Action (VLA) Systems",
       "section": "2. Foundation Models for Robotics",
       "tags": [
-        "foundation-model",
-        "vla-systems",
         "planning",
+        "vla-systems",
+        "foundation-model",
         "llm"
       ],
       "token_count": 276,
@@ -399,12 +399,12 @@
       "chapter": "Chapter 4: Vision–Language–Action (VLA) Systems",
       "section": "3. VLA Architecture",
       "tags": [
-        "control",
         "vla",
-        "llm",
+        "control",
         "action",
-        "vla-systems",
-        "perception"
+        "llm",
+        "perception",
+        "vla-systems"
       ],
       "token_count": 459,
       "source_file": "chapter-4-vla.md"
@@ -417,11 +417,11 @@
       "tags": [
         "vla",
         "simulation",
+        "action",
         "llm",
         "robot-learning",
-        "action",
-        "foundation-model",
-        "vla-systems"
+        "vla-systems",
+        "foundation-model"
       ],
       "token_count": 442,
       "source_file": "chapter-4-vla.md"
@@ -435,10 +435,10 @@
         "vla",
         "control",
         "embodiment",
-        "llm",
         "action",
-        "foundation-model",
-        "vla-systems"
+        "llm",
+        "vla-systems",
+        "foundation-model"
       ],
       "token_count": 258,
       "source_file": "chapter-4-vla.md"
@@ -449,11 +449,11 @@
       "chapter": "Chapter 4: Vision–Language–Action (VLA) Systems",
       "section": "6. Challenges and Limitations",
       "tags": [
-        "control",
         "vla",
+        "control",
         "simulation",
-        "foundation-model",
-        "vla-systems"
+        "vla-systems",
+        "foundation-model"
       ],
       "token_count": 327,
       "source_file": "chapter-4-vla.md"
@@ -481,11 +481,11 @@
         "vla",
         "simulation",
         "embodiment",
-        "llm",
         "action",
+        "llm",
         "planning",
-        "foundation-model",
-        "vla-systems"
+        "vla-systems",
+        "foundation-model"
       ],
       "token_count": 219,
       "source_file": "chapter-4-vla.md"
@@ -496,12 +496,12 @@
       "chapter": "Chapter 4: Vision–Language–Action (VLA) Systems",
       "section": "9. Summary and Key Takeaways",
       "tags": [
-        "physical-ai",
         "vla",
         "simulation",
         "action",
-        "foundation-model",
-        "vla-systems"
+        "vla-systems",
+        "physical-ai",
+        "foundation-model"
       ],
       "token_count": 262,
       "source_file": "chapter-4-vla.md"
