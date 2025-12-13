@@ -36,6 +36,12 @@ class ResponseType(Enum):
     NO_RESULTS = "no_results"
 
 
+class QuestionIntent(Enum):
+    """Classification of question intent for response strategy."""
+    SUMMARY = "summary"      # Broad overview questions (bypass low-confidence warnings)
+    PRECISE = "precise"      # Specific technical questions (apply strict thresholds)
+
+
 @dataclass
 class Response:
     """Represents a chatbot response."""
@@ -117,6 +123,46 @@ class ScopeChecker:
         return False, None
 
 
+class QuestionIntentClassifier:
+    """
+    Classifies question intent to determine response strategy.
+
+    SUMMARY questions: Broad overview requests that don't require strict
+    confidence thresholds. These are honestly answerable with partial coverage.
+
+    PRECISE questions: Specific technical queries that require strict
+    confidence thresholds to ensure accurate, well-supported answers.
+    """
+
+    # Patterns indicating summary/overview questions
+    SUMMARY_PATTERNS = [
+        r'\b(tell me about|what is|what are)\b.*\b(chapter|section)\b',
+        r'\b(overview|summarize|summary|introduce|introduction)\b',
+        r'\b(give me|provide)\b.*\b(overview|summary|introduction)\b',
+        r'^(what is|what are)\s+(chapter|section)\s+\d+',
+        r'\b(explain|describe)\b.*\b(chapter|section)\b',
+        r'\b(cover|covers|covered)\b.*\b(chapter|section)\b',
+        r'^what does (chapter|section)\s+\d+\s+(cover|discuss|explain)',
+    ]
+
+    @classmethod
+    def classify(cls, query: str) -> QuestionIntent:
+        """
+        Classify the intent of a user query.
+
+        Returns:
+            QuestionIntent.SUMMARY for broad overview questions
+            QuestionIntent.PRECISE for specific technical questions
+        """
+        query_lower = query.lower().strip()
+
+        for pattern in cls.SUMMARY_PATTERNS:
+            if re.search(pattern, query_lower):
+                return QuestionIntent.SUMMARY
+
+        return QuestionIntent.PRECISE
+
+
 class Responder:
     """Generates responses from retrieved context."""
 
@@ -187,16 +233,20 @@ class Responder:
         Generate a response for a user query.
 
         This method:
-        1. Checks for unsafe queries
-        2. Checks for out-of-scope queries
-        3. Retrieves relevant context
-        4. Verifies confidence threshold
-        5. Generates answer with citations
+        1. Classifies question intent (SUMMARY vs PRECISE)
+        2. Checks for unsafe queries
+        3. Checks for out-of-scope queries
+        4. Retrieves relevant context
+        5. Applies confidence threshold (PRECISE questions only)
+        6. Generates answer with citations
 
         Returns:
             Response object with answer, citations, and metadata
         """
-        # Step 1: Safety check
+        # Step 1: Classify question intent
+        intent = QuestionIntentClassifier.classify(query)
+
+        # Step 2: Safety check
         is_unsafe, safety_reason = SafetyChecker.is_unsafe(query)
         if is_unsafe:
             return Response(
@@ -245,8 +295,10 @@ class Responder:
         top_score = results[0].score
         confidence = self._normalize_score(top_score)
 
-        # Step 5: Check confidence threshold
-        if confidence < CONFIDENCE_THRESHOLD:
+        # Step 5: Check confidence threshold (PRECISE questions only)
+        # SUMMARY questions bypass low-confidence warnings as they can be
+        # honestly answered with partial coverage of broad topics
+        if intent == QuestionIntent.PRECISE and confidence < CONFIDENCE_THRESHOLD:
             return Response(
                 response_type=ResponseType.LOW_CONFIDENCE,
                 answer=(
@@ -306,7 +358,13 @@ def main():
 
     # Test queries including edge cases
     test_queries = [
-        # Normal queries
+        # Summary/Overview questions (should NOT show low-confidence warning)
+        "Tell me about chapter 1",
+        "Give me an overview of chapter 2",
+        "What does chapter 3 cover?",
+        "Summarize the ROS 2 chapter",
+
+        # Precise technical queries (normal behavior)
         "What is the perception-action loop?",
         "How does ROS 2 handle communication between nodes?",
         "What is domain randomization in simulation?",
@@ -324,6 +382,10 @@ def main():
         print(f"\n{'=' * 60}")
         print(f"Query: {query}")
         print("-" * 60)
+
+        # Show intent classification for debugging
+        intent = QuestionIntentClassifier.classify(query)
+        print(f"Intent: {intent.value}")
 
         response = responder.generate_response(query)
 
