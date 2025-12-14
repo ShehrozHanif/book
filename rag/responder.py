@@ -496,3 +496,134 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+# """
+# RAG Responder for AI-Native Physical AI & Humanoid Robotics Textbook
+# """
+
+# import os
+# import re
+# from enum import Enum
+# from typing import List, Dict, Optional
+# from dataclasses import dataclass
+
+# from retriever import Retriever, RetrievalResult
+
+# try:
+#     import google.generativeai as genai
+#     genai.configure(api_key=os.environ.get("API_KEY"))
+#     GEMINI_AVAILABLE = True
+# except Exception:
+#     GEMINI_AVAILABLE = False
+
+
+# CONFIDENCE_THRESHOLD = 0.72
+# MAX_CONTEXT_CHUNKS = 3
+
+
+# class ResponseType(Enum):
+#     SUCCESS = "success"
+#     OUT_OF_SCOPE = "out_of_scope"
+#     LOW_CONFIDENCE = "low_confidence"
+#     UNSAFE_QUERY = "unsafe_query"
+#     NO_RESULTS = "no_results"
+
+
+# @dataclass
+# class Response:
+#     response_type: ResponseType
+#     answer: str
+#     citations: List[Dict[str, str]]
+#     confidence: float
+#     warning: Optional[str] = None
+
+
+# class Responder:
+#     def __init__(self, retriever: Optional[Retriever] = None):
+#         self.retriever = retriever or Retriever()
+#         self.llm = None
+#         if GEMINI_AVAILABLE:
+#             self.llm = genai.GenerativeModel("gemini-2.5-flash")
+
+#     # ---------- NEW (CRITICAL) ----------
+#     def _extract_chapter_filter(self, query: str) -> Optional[str]:
+#         match = re.search(r'\bchapter\s*(\d+)\b', query.lower())
+#         return match.group(1) if match else None
+#     # -----------------------------------
+
+#     def _normalize(self, score: float) -> float:
+#         return min(1.0, score / 10.0)
+
+#     def _format_citations(self, results: List[RetrievalResult]) -> List[Dict[str, str]]:
+#         seen = set()
+#         citations = []
+#         for r in results:
+#             key = (r.chapter, r.section)
+#             if key not in seen:
+#                 citations.append({"chapter": r.chapter, "section": r.section})
+#                 seen.add(key)
+#         return citations
+
+#     def _synthesize(self, query: str, results: List[RetrievalResult]) -> str:
+#         if not self.llm:
+#             return results[0].text
+
+#         context = "\n\n".join(
+#             f"[{r.chapter} – {r.section}]\n{r.text}" for r in results
+#         )
+
+#         prompt = f"""
+# You are a textbook teaching assistant.
+# Answer ONLY from the provided content.
+
+# CONTENT:
+# {context}
+
+# QUESTION:
+# {query}
+
+# ANSWER:
+# """
+
+#         return self.llm.generate_content(
+#             prompt,
+#             generation_config={"temperature": 0.3, "max_output_tokens": 500}
+#         ).text.strip()
+
+#     def generate_response(self, query: str) -> Response:
+#         chapter_filter = self._extract_chapter_filter(query)
+
+#         results = self.retriever.retrieve(
+#             query=query,
+#             top_k=MAX_CONTEXT_CHUNKS,
+#             chapter_filter=chapter_filter
+#         )
+
+#         if not results:
+#             return Response(
+#                 response_type=ResponseType.NO_RESULTS,
+#                 answer="I couldn’t find content for that chapter in the textbook.",
+#                 citations=[],
+#                 confidence=0.0
+#             )
+
+#         confidence = self._normalize(results[0].score)
+#         answer = self._synthesize(query, results)
+#         citations = self._format_citations(results)
+
+#         return Response(
+#             response_type=ResponseType.SUCCESS,
+#             answer=answer,
+#             citations=citations,
+#             confidence=confidence
+#         )

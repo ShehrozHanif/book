@@ -242,3 +242,144 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+ changes
+
+
+
+
+
+
+# """
+# RAG Retriever for AI-Native Physical AI & Humanoid Robotics Textbook
+# """
+
+# import json
+# import re
+# from pathlib import Path
+# from typing import List, Optional
+# from dataclasses import dataclass
+
+# INDEX_PATH = Path(__file__).parent / "index.json"
+# DEFAULT_TOP_K = 5
+
+
+# @dataclass
+# class RetrievalResult:
+#     chunk_id: str
+#     text: str
+#     chapter: str
+#     section: str
+#     tags: List[str]
+#     score: float
+#     source_file: str
+
+
+# class Retriever:
+#     def __init__(self, index_path: Path = INDEX_PATH):
+#         self.index_path = index_path
+#         self.chunks = []
+#         self.metadata = {}
+#         self._load_index()
+
+#     def _load_index(self):
+#         if not self.index_path.exists():
+#             raise FileNotFoundError("index.json not found. Run indexer.py first.")
+
+#         with open(self.index_path, "r", encoding="utf-8") as f:
+#             data = json.load(f)
+
+#         self.chunks = data.get("chunks", [])
+#         self.metadata = data.get("metadata", {})
+#         print(f"[Retriever] Loaded {len(self.chunks)} chunks")
+
+#     # ---------- NEW (CRITICAL) ----------
+#     def _extract_chapter_number(self, chapter_name: str) -> Optional[str]:
+#         """
+#         Extracts chapter number from:
+#         'Chapter 2: ROS 2 & Robotics System Architecture'
+#         """
+#         match = re.search(r'chapter\s*(\d+)', chapter_name.lower())
+#         return match.group(1) if match else None
+#     # -----------------------------------
+
+#     def _tokenize(self, text: str) -> List[str]:
+#         words = re.findall(r'\b\w+\b', text.lower())
+#         stop_words = {
+#             'the','is','are','a','an','and','or','of','to','in','on','for','with',
+#             'about','what','how','why','does','do','did','this','that'
+#         }
+#         return [w for w in words if w not in stop_words and len(w) > 2]
+
+#     def _compute_relevance(self, tokens: List[str], chunk: dict) -> float:
+#         score = 0.0
+#         text = chunk["text"].lower()
+#         section = chunk["section"].lower()
+#         chapter = chunk["chapter"].lower()
+#         tags = [t.lower() for t in chunk.get("tags", [])]
+
+#         for t in tokens:
+#             score += text.count(t)
+#             if t in section:
+#                 score += 3
+#             if t in chapter:
+#                 score += 2
+#             if any(t in tag for tag in tags):
+#                 score += 5
+
+#         return score / max(len(tokens), 1)
+
+#     def retrieve(
+#         self,
+#         query: str,
+#         top_k: int = DEFAULT_TOP_K,
+#         chapter_filter: Optional[str] = None
+#     ) -> List[RetrievalResult]:
+
+#         tokens = self._tokenize(query)
+#         if not tokens:
+#             return []
+
+#         scored = []
+
+#         for chunk in self.chunks:
+#             # ---------- HARD CHAPTER FILTER ----------
+#             if chapter_filter:
+#                 chunk_ch = self._extract_chapter_number(chunk["chapter"])
+#                 if chunk_ch != chapter_filter:
+#                     continue
+#             # ---------------------------------------
+
+#             score = self._compute_relevance(tokens, chunk)
+#             if score > 0:
+#                 scored.append((chunk, score))
+
+#         scored.sort(key=lambda x: x[1], reverse=True)
+
+#         return [
+#             RetrievalResult(
+#                 chunk_id=c["id"],
+#                 text=c["text"],
+#                 chapter=c["chapter"],
+#                 section=c["section"],
+#                 tags=c.get("tags", []),
+#                 score=s,
+#                 source_file=c.get("source_file", "")
+#             )
+#             for c, s in scored[:top_k]
+#         ]
+
+#     def get_all_chapters(self) -> List[str]:
+#         return sorted({c["chapter"] for c in self.chunks})
+
+#     def get_all_tags(self) -> List[str]:
+#         tags = set()
+#         for c in self.chunks:
+#             tags.update(c.get("tags", []))
+#         return sorted(tags)

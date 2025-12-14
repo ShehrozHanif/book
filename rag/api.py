@@ -272,3 +272,87 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from pydantic import BaseModel
+# from datetime import datetime
+
+# from retriever import Retriever
+# from responder import Responder, ResponseType
+
+# app = FastAPI(title="Physical AI RAG API")
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# retriever = Retriever()
+# responder = Responder(retriever)
+
+
+# class QuestionRequest(BaseModel):
+#     question: str
+
+
+# class Citation(BaseModel):
+#     chapter: str
+#     section: str
+
+
+# class AnswerResponse(BaseModel):
+#     success: bool
+#     response_type: str
+#     answer: str
+#     citations: list[Citation]
+#     confidence: float
+#     warning: str | None = None
+#     timestamp: str
+
+
+# @app.get("/health")
+# def health():
+#     return {
+#         "status": "healthy",
+#         "index_loaded": True,
+#         "chunk_count": len(retriever.chunks),
+#         "timestamp": datetime.utcnow().isoformat() + "Z",
+#     }
+
+
+# @app.post("/ask", response_model=AnswerResponse)
+# def ask(req: QuestionRequest):
+#     r = responder.generate_response(req.question)
+#     return AnswerResponse(
+#         success=r.response_type == ResponseType.SUCCESS,
+#         response_type=r.response_type.value,
+#         answer=r.answer,
+#         citations=[Citation(**c) for c in r.citations],
+#         confidence=r.confidence,
+#         warning=r.warning,
+#         timestamp=datetime.utcnow().isoformat() + "Z",
+#     )
+
+
+# @app.get("/chapters")
+# def chapters():
+#     return retriever.get_all_chapters()
