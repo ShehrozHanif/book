@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
 
-const API_URL = process.env.NODE_ENV === 'production'
-  ? '/api' // In production, use relative path or configure your API URL
-  : 'http://localhost:8000';
+// const API_URL = process.env.NODE_ENV === 'production'
+//   ? '/api' // In production, use relative path or configure your API URL
+//   : 'http://localhost:8000';
+
+
+const API_URL = 'https://api-book-4mmd.onrender.com';
+
 
 function ChatMessage({ message, isUser }) {
   return (
@@ -86,7 +90,12 @@ export default function ChatBot() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question: userMessage }),
+        body: JSON.stringify({
+          question: userMessage,
+          chapter_filter: null,
+        }),
+
+        // body: JSON.stringify({ question: userMessage }),
       });
 
       if (!response.ok) {
@@ -105,7 +114,7 @@ export default function ChatBot() {
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
-        text: "I'm sorry, I couldn't connect to the backend service. Please make sure the RAG API is running (uvicorn api:app --reload --port 8000).",
+        text: "I'm sorry, I couldn’t reach the AI service right now. Please try again in a moment.",
         isUser: false,
         citations: [],
       }]);
