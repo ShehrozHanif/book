@@ -96,7 +96,7 @@ const config = {
             label: 'Textbook',
           },
           {
-            href: 'https://github.com',
+            href: 'https://github.com/ShehrozHanif/book',
             label: 'GitHub',
             position: 'right',
           },
@@ -140,7 +140,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com',
+                href: 'https://github.com/ShehrozHanif/book',
               },
             ],
           },
